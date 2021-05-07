@@ -2,7 +2,7 @@
 import { Line } from "vue3-chart-v2";
 
 export default {
-  name: "Sats",
+  name: "Value",
   extends: Line,
   data() {
     return {
@@ -11,9 +11,14 @@ export default {
         labels: [],
         datasets: [
           {
-            label: "Sats",
+            label: "Value",
             data: [],
-            backgroundColor: ["#f7931a"]
+            backgroundColor: ["#f2a900"]
+          },
+          {
+            label: "Costs",
+            data: [],
+            backgroundColor: ["#000"]
           }
         ]
       },
@@ -24,7 +29,12 @@ export default {
     };
   },
   mounted: async function() {
-    this.fillChart();
+    fetch("http://localhost:3000/currentPrice")
+      .then(data => data.json())
+      .then(data => {
+        this.currentPrice = Number(data);
+        this.fillChart();
+      });
   },
   methods: {
     fillChart: function() {
@@ -35,11 +45,20 @@ export default {
             let date = new Date(data[i].timestamp);
             this.chartData.labels.push(date.getDate() + "-" + date.getMonth());
             if (i == 0) {
-              this.chartData.datasets[0].data.push(data[i].amount * 100000000);
+              this.chartData.datasets[0].data.push(
+                data[i].amount * this.currentPrice
+              );
+              this.chartData.datasets[1].data.push(
+                data[i].amount * data[i].price
+              );
             } else {
               this.chartData.datasets[0].data.push(
-                data[i].amount * 100000000 +
+                data[i].amount * this.currentPrice +
                   this.chartData.datasets[0].data[i - 1]
+              );
+              this.chartData.datasets[1].data.push(
+                data[i].amount * data[i].price +
+                  this.chartData.datasets[1].data[i - 1]
               );
             }
           }
@@ -50,7 +69,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style>
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
