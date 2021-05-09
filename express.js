@@ -77,6 +77,21 @@ app.get("/trades", async (req, res) => {
   }
 });
 
+app.get("/priceHistory", async (req, res) => {
+  let output = [];
+  try {
+    let response = await bitvavo.candles("BTC-EUR", "1d", {
+      start: 1617573600000
+    });
+    for (let entry of response) {
+      output.push({ price: entry[4], timestamp: entry[0] });
+    }
+    res.json(output.reverse());
+  } catch (error) {
+    console.log(error);
+  }
+});
+
 const httpsServer = https.createServer(credentials, app);
 
 httpsServer.listen(port, () => {
