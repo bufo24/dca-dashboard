@@ -46,7 +46,7 @@ app.get("/currentPrice", async (req, res) => {
 });
 
 app.get("/tradeStats", async (req, res) => {
-  let output = { btc: 0, costs: 0 };
+  let output = { btc: 0, costs: 0, investments: 0 };
   try {
     let response = await bitvavo.trades("BTC-EUR", {
       start: 1617573600000
@@ -54,6 +54,7 @@ app.get("/tradeStats", async (req, res) => {
     for (let entry of response) {
       output.btc += +entry.amount;
       output.costs += +entry.amount * +entry.price + +entry.fee;
+      output.investments++;
     }
     res.json(output);
   } catch (error) {
