@@ -2,7 +2,7 @@
 import { Line } from "vue-chartjs";
 
 export default {
-  name: "Sats",
+  name: "Price",
   extends: Line,
   data() {
     return {
@@ -11,7 +11,7 @@ export default {
         labels: [],
         datasets: [
           {
-            label: "Sats",
+            label: "Bitcoin",
             data: [],
             backgroundColor: ["#f7931a"]
           }
@@ -29,20 +29,13 @@ export default {
   },
   methods: {
     fillChart: function() {
-      fetch("https://bitvavo.jjdev.nl:3443/trades")
+      fetch("https://bitvavo.jjdev.nl:3443/priceHistory")
         .then(data => data.json())
         .then(data => {
           for (let i = 0; i < data.length; i++) {
             let date = new Date(data[i].timestamp);
             this.chartData.labels.push(date.getDate() + "-" + date.getMonth());
-            if (i == 0) {
-              this.chartData.datasets[0].data.push(data[i].amount * 100000000);
-            } else {
-              this.chartData.datasets[0].data.push(
-                data[i].amount * 100000000 +
-                  this.chartData.datasets[0].data[i - 1]
-              );
-            }
+            this.chartData.datasets[0].data.push(data[i].price);
           }
           this.renderChart(this.chartData, this.chartOptions);
         });
@@ -59,9 +52,5 @@ export default {
   text-align: center;
   color: #2c3e50;
   margin-top: 60px;
-}
-canvas {
-  margin-left: auto;
-  margin-right: auto;
 }
 </style>

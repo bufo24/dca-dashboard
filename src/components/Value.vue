@@ -24,7 +24,8 @@ export default {
       },
       chartOptions: {
         required: true,
-        responsive: false
+        responsive: true,
+        maintainAspectRatio: false
       }
     };
   },
