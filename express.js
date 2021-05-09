@@ -1,10 +1,30 @@
+const fs = require("fs");
+const http = require("http");
+const https = require("https");
 const express = require("express");
 const cors = require("cors");
 const app = express();
 
 app.use(cors());
-const port = 3000;
+const port = 3443;
 
+const privateKey = fs.readFileSync(
+  "/etc/letsencrypt/live/bitvavo.jjdev.nl/privkey.pem",
+  "utf8"
+);
+const certificate = fs.readFileSync(
+  "/etc/letsencrypt/live/bitvavo.jjdev.nl/cert.pem",
+  "utf8"
+);
+const ca = fs.readFileSync(
+  "/etc/letsencrypt/live/bitvavo.jjdev.nl/chain.pem",
+  "utf8"
+);
+const credentials = {
+  key: privateKey,
+  cert: certificate,
+  ca: ca
+};
 const { API_KEY, API_SECRET } = require("./keys");
 
 const bitvavo = require("bitvavo")().options({
@@ -32,9 +52,8 @@ app.get("/tradeStats", async (req, res) => {
       start: 1617573600000
     });
     for (let entry of response) {
-      output.btc += Number(entry.amount);
-      output.costs +=
-        Number(entry.amount) * Number(entry.price) + Number(entry.fee);
+      output.btc += +entry.amount;
+      output.costs += +entry.amount * +entry.price + +entry.fee;
     }
     res.json(output);
   } catch (error) {
@@ -57,31 +76,8 @@ app.get("/trades", async (req, res) => {
   }
 });
 
-app.listen(port, () => {
-  console.log(`Example app listening at http://localhost:${port}`);
+const httpsServer = https.createServer(credentials, app);
+
+httpsServer.listen(port, () => {
+  console.log("HTTPS Server running on port 443");
 });
-
-// const price = async () => {
-//     return new Promise(resolve => {
-//         try {
-//             let response = await bitvavo.tickerPrice({
-//             market: "BTC-EUR"
-//             });
-//             resolve(response.price);
-//         } catch (error) {
-//             console.log(error);
-//         }
-//     })
-// };
-
-//   try {
-//     let response = await bitvavo.trades("BTC-EUR", { start: 1617573600000 });
-//     for (let entry of response) {
-//       console.log(entry);
-//       this.sats += Number(entry.amount);
-//       this.costs +=
-//         Number(entry.amount) * Number(entry.price) + Number(entry.fee);
-//     }
-//   } catch (error) {
-//     console.log(error);
-//   }
