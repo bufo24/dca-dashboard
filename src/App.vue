@@ -1,31 +1,37 @@
 <template>
   <v-app>
-    <v-app-bar app>
+    <v-app-bar app color="primary">
       <h1>DCA Dashboard</h1>
       <v-spacer></v-spacer>
       <span> €{{ currentPrice }}</span>
       <v-icon color="#f7931a">mdi-bitcoin</v-icon>
     </v-app-bar>
-    <v-main>
+    <v-main color="primary">
       <v-container fluid>
         <v-row>
-          <v-col no-gutters><Dashboard /> </v-col>
+          <v-col><Dashboard /> </v-col>
         </v-row>
         <v-row>
           <v-col>
-            <v-card><Sats /></v-card
+            <v-card color="primary"><Sats /></v-card
           ></v-col>
           <v-col>
-            <v-card><Value /> </v-card
+            <v-card color="primary"><Value /> </v-card
           ></v-col>
         </v-row>
+        <v-row>
+          <v-col>
+            <v-card color="primary"><Price /> </v-card> </v-col
+        ></v-row>
       </v-container>
     </v-main>
 
     <v-footer app>
       <span
         >By
-        <a href="https://github.com/bufo24" target="_blank">@bufo24</a></span
+        <a href="https://github.com/bufo24" target="_blank" style="color: black"
+          >@bufo24</a
+        ></span
       >
     </v-footer>
   </v-app>
@@ -35,9 +41,10 @@
 import Sats from "./components/Sats";
 import Value from "./components/Value";
 import Dashboard from "./components/Dashboard";
+import Price from "./components/Price";
 export default {
   name: "App",
-  components: { Sats, Value, Dashboard },
+  components: { Sats, Value, Dashboard, Price },
   data: () => ({
     currentPrice: 0,
     pages: [

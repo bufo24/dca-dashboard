@@ -2,12 +2,12 @@
   <div>
     <v-row
       ><v-col>
-        <v-card>
+        <v-card class="col" color="secondary">
           <span> Total invested: <br />€{{ costs }}</span></v-card
         >
       </v-col>
       <v-col>
-        <v-card>
+        <v-card class="col" color="secondary">
           <span> Sats stacked: <br />{{ (btc * 100000000).toFixed() }} </span
           ><span style="font-size:12px"
             >(€{{ (btc * currentPrice).toFixed(2) }})</span
@@ -15,10 +15,10 @@
         </v-card>
       </v-col>
       <v-col>
-        <v-card>
+        <v-card class="col" color="secondary">
           <span>
             Percent change: <br /><span
-              v-bind:style="[
+              :style="[
                 ((btc * currentPrice) / costs - 1) * 100 < 0
                   ? { color: 'red' }
                   : { color: 'green' }
@@ -31,7 +31,7 @@
         >
       </v-col>
       <v-col>
-        <v-card>
+        <v-card class="col" color="secondary">
           <span>
             Average price: <br />
             €{{ (costs / btc).toFixed(2) }}</span
@@ -40,9 +40,9 @@
       </v-col>
 
       <v-col>
-        <v-card>
+        <v-card class="col" color="secondary">
           <span>
-            # Investments <br />
+            # Investments: <br />
             {{ investments }}</span
           ></v-card
         >
@@ -88,5 +88,8 @@ export default {
   text-align: center;
   color: #2c3e50;
   margin-top: 60px;
+}
+.col {
+  min-height: 100%;
 }
 </style>
