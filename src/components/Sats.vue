@@ -1,5 +1,5 @@
 <script>
-import { Line } from "vue3-chart-v2";
+import { Line } from "vue-chartjs";
 
 export default {
   name: "Sats",
@@ -28,7 +28,7 @@ export default {
   },
   methods: {
     fillChart: function() {
-      fetch("http://localhost:3000/trades")
+      fetch("http://192.168.0.11:3000/trades")
         .then(data => data.json())
         .then(data => {
           for (let i = 0; i < data.length; i++) {
@@ -58,5 +58,9 @@ export default {
   text-align: center;
   color: #2c3e50;
   margin-top: 60px;
+}
+canvas {
+  margin-left: auto;
+  margin-right: auto;
 }
 </style>

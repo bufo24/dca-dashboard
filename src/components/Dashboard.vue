@@ -1,16 +1,56 @@
 <template>
-  <span> Sats stacked: {{ (btc * 100000000).toFixed() }}</span>
-  <br />
-  <span> Currently worth: €{{ (btc * currentPrice).toFixed(2) }}</span> <br />
-  <span> Costs: €{{ costs }}</span> <br />
-  <span>
-    PnL: <span v-if="btc * currentPrice - costs < 0">-</span>€{{
-      Math.abs(btc * currentPrice - costs).toFixed(2)
-    }}</span
-  >
-  <br />
-  <span> Current price: €{{ currentPrice }}</span> <br />
-  <span> Average price: €{{ (costs / btc).toFixed(2) }}</span> <br />
+  <div>
+    <v-row
+      ><v-col>
+        <v-card>
+          <span> Total invested: <br />€{{ costs }}</span></v-card
+        >
+      </v-col>
+      <v-col>
+        <v-card>
+          <span> Sats stacked: <br />{{ (btc * 100000000).toFixed() }} </span
+          ><span style="font-size:12px"
+            >(€{{ (btc * currentPrice).toFixed(2) }})</span
+          >
+        </v-card>
+      </v-col>
+      <v-col>
+        <v-card>
+          <span>
+            Percent change: <br />{{
+              (((btc * currentPrice) / costs - 1) * 100).toFixed(2)
+            }}%</span
+          ></v-card
+        >
+      </v-col>
+
+      <v-col>
+        <v-card>
+          <span>
+            PnL: <br /><span v-if="btc * currentPrice - costs < 0">-</span>€{{
+              Math.abs(btc * currentPrice - costs).toFixed(2)
+            }}</span
+          ></v-card
+        >
+      </v-col>
+      <v-col>
+        <v-card>
+          <span>
+            Current price: <br />
+            €{{ currentPrice }}</span
+          ></v-card
+        >
+      </v-col>
+      <v-col>
+        <v-card>
+          <span>
+            Average price: <br />
+            €{{ (costs / btc).toFixed(2) }}</span
+          ></v-card
+        >
+      </v-col>
+    </v-row>
+  </div>
 </template>
 
 <script>
@@ -24,12 +64,12 @@ export default {
     };
   },
   mounted: async function() {
-    fetch("http://localhost:3000/currentPrice")
+    fetch("http://192.168.0.11:3000/currentPrice")
       .then(data => data.json())
       .then(data => {
         this.currentPrice = data;
       });
-    fetch("http://localhost:3000/tradeStats")
+    fetch("http://192.168.0.11:3000/tradeStats")
       .then(data => data.json())
       .then(data => {
         this.btc = data.btc;

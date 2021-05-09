@@ -1,4 +1,4 @@
-# btc-dca
+# dca-dashboard-v2
 
 ## Project setup
 ```
