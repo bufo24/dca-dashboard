@@ -17,27 +17,16 @@
       <v-col>
         <v-card>
           <span>
-            Percent change: <br />{{
-              (((btc * currentPrice) / costs - 1) * 100).toFixed(2)
-            }}%</span
-          ></v-card
-        >
-      </v-col>
-
-      <v-col>
-        <v-card>
-          <span>
-            PnL: <br /><span v-if="btc * currentPrice - costs < 0">-</span>€{{
-              Math.abs(btc * currentPrice - costs).toFixed(2)
-            }}</span
-          ></v-card
-        >
-      </v-col>
-      <v-col>
-        <v-card>
-          <span>
-            Current price: <br />
-            €{{ currentPrice }}</span
+            Percent change: <br /><span
+              v-bind:style="[
+                ((btc * currentPrice) / costs - 1) * 100 < 0
+                  ? { color: 'red' }
+                  : { color: 'green' }
+              ]"
+              >{{
+                (((btc * currentPrice) / costs - 1) * 100).toFixed(2)
+              }}%</span
+            ></span
           ></v-card
         >
       </v-col>
@@ -46,6 +35,15 @@
           <span>
             Average price: <br />
             €{{ (costs / btc).toFixed(2) }}</span
+          ></v-card
+        >
+      </v-col>
+
+      <v-col>
+        <v-card>
+          <span>
+            # Investments <br />
+            {{ investments }}</span
           ></v-card
         >
       </v-col>
@@ -58,22 +56,25 @@ export default {
   name: "App",
   data: () => {
     return {
+      activeColor: "green",
       currentPrice: 0,
       btc: 0,
-      costs: 0
+      costs: 0,
+      investments: 0
     };
   },
-  mounted: async function() {
-    fetch("/currentPrice")
+  mounted: function() {
+    fetch("https://bitvavo.jjdev.nl:3443/currentPrice")
       .then(data => data.json())
       .then(data => {
         this.currentPrice = data;
       });
-    fetch("/tradeStats")
+    fetch("https://bitvavo.jjdev.nl:3443/tradeStats")
       .then(data => data.json())
       .then(data => {
         this.btc = data.btc;
         this.costs = data.costs;
+        this.investments = data.investments;
       });
   }
 };
