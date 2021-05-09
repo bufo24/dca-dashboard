@@ -64,12 +64,12 @@ export default {
     };
   },
   mounted: async function() {
-    fetch("http://192.168.0.11:3000/currentPrice")
+    fetch("/currentPrice")
       .then(data => data.json())
       .then(data => {
         this.currentPrice = data;
       });
-    fetch("http://192.168.0.11:3000/tradeStats")
+    fetch("/tradeStats")
       .then(data => data.json())
       .then(data => {
         this.btc = data.btc;

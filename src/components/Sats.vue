@@ -28,7 +28,7 @@ export default {
   },
   methods: {
     fillChart: function() {
-      fetch("http://192.168.0.11:3000/trades")
+      fetch("/trades")
         .then(data => data.json())
         .then(data => {
           for (let i = 0; i < data.length; i++) {
