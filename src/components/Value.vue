@@ -13,12 +13,12 @@ export default {
           {
             label: "Value",
             data: [],
-            backgroundColor: ["#f2a900"]
+            backgroundColor: ["rgb(247, 148, 26)"]
           },
           {
             label: "Costs",
             data: [],
-            backgroundColor: ["#000"]
+            backgroundColor: ["rgb(0, 0, 0, 0.5)"]
           }
         ]
       },
@@ -29,7 +29,7 @@ export default {
     };
   },
   mounted: async function() {
-    fetch("/currentPrice")
+    fetch("https://bitvavo.jjdev.nl:3443/currentPrice")
       .then(data => data.json())
       .then(data => {
         this.currentPrice = +data;
@@ -38,7 +38,7 @@ export default {
   },
   methods: {
     fillChart: function() {
-      fetch("/trades")
+      fetch("https://bitvavo.jjdev.nl:3443/trades")
         .then(data => data.json())
         .then(data => {
           for (let i = 0; i < data.length; i++) {

@@ -28,7 +28,7 @@ export default {
   },
   methods: {
     fillChart: function() {
-      fetch("/trades")
+      fetch("https://bitvavo.jjdev.nl:3443/trades")
         .then(data => data.json())
         .then(data => {
           for (let i = 0; i < data.length; i++) {
