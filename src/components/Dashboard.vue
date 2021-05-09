@@ -3,7 +3,12 @@
   <br />
   <span> Currently worth: €{{ (btc * currentPrice).toFixed(2) }}</span> <br />
   <span> Costs: €{{ costs }}</span> <br />
-  <span> PnL: €{{ (btc * currentPrice - costs).toFixed(2) }}</span> <br />
+  <span>
+    PnL: <span v-if="btc * currentPrice - costs < 0">-</span>€{{
+      Math.abs(btc * currentPrice - costs).toFixed(2)
+    }}</span
+  >
+  <br />
   <span> Current price: €{{ currentPrice }}</span> <br />
   <span> Average price: €{{ (costs / btc).toFixed(2) }}</span> <br />
 </template>
