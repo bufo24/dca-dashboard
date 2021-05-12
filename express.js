@@ -36,6 +36,10 @@ const bitvavo = require("bitvavo")().options({
   DEBUGGING: false
 });
 
+app.get("/", (req, res) => {
+  res.send("Hello World!");
+});
+
 app.get("/currentPrice", async (req, res) => {
   try {
     let response = await bitvavo.tickerPrice({ market: "BTC-EUR" });
