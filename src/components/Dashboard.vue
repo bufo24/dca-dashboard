@@ -8,10 +8,8 @@
       </v-col>
       <v-col>
         <v-card class="col" color="secondary">
-          <span> Sats stacked: <br />{{ (btc * 100000000).toFixed() }} </span
-          ><span style="font-size:12px"
-            >(€{{ (btc * currentPrice).toFixed(2) }})</span
-          >
+          <span> Sats stacked: <br />{{ sats }} </span
+          ><span style="font-size:12px">(€{{ satsValue }})</span>
         </v-card>
       </v-col>
       <v-col>
@@ -19,13 +17,9 @@
           <span>
             Percent change: <br /><span
               :style="[
-                ((btc * currentPrice) / costs - 1) * 100 < 0
-                  ? { color: 'red' }
-                  : { color: 'green' }
+                percentChange < 0 ? { color: 'red' } : { color: 'green' }
               ]"
-              >{{
-                (((btc * currentPrice) / costs - 1) * 100).toFixed(2)
-              }}%</span
+              >{{ percentChange }}%</span
             ></span
           ></v-card
         >
@@ -34,7 +28,7 @@
         <v-card class="col" color="secondary">
           <span>
             Average price: <br />
-            €{{ (costs / btc).toFixed(2) }}</span
+            €{{ avgPrice }}</span
           ></v-card
         >
       </v-col>
@@ -76,6 +70,22 @@ export default {
         this.costs = data.costs;
         this.investments = data.investments;
       });
+  },
+  computed: {
+    avgPrice: function() {
+      return (this.costs / this.btc).toFixed(2);
+    },
+    percentChange: function() {
+      return (((this.btc * this.currentPrice) / this.costs - 1) * 100).toFixed(
+        2
+      );
+    },
+    sats: function() {
+      return (this.btc * 100000000).toFixed();
+    },
+    satsValue: function() {
+      return (this.btc * this.currentPrice).toFixed(2);
+    }
   }
 };
 </script>
