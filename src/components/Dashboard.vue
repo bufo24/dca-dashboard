@@ -50,6 +50,7 @@ export default {
   name: "App",
   data: () => {
     return {
+      host: localStorage.getItem("host"),
       activeColor: "green",
       currentPrice: 0,
       btc: 0,
@@ -58,12 +59,13 @@ export default {
     };
   },
   mounted: function() {
-    fetch("https://bitvavo.jjdev.nl:3443/currentPrice")
+    console.log("host", this.host);
+    fetch(this.host + "/currentPrice")
       .then(data => data.json())
       .then(data => {
         this.currentPrice = data;
       });
-    fetch("https://bitvavo.jjdev.nl:3443/tradeStats")
+    fetch(this.host + "/tradeStats")
       .then(data => data.json())
       .then(data => {
         this.btc = data.btc;

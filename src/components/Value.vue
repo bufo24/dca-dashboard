@@ -6,6 +6,7 @@ export default {
   extends: Line,
   data() {
     return {
+      host: localStorage.getItem("host"),
       chartData: {
         required: true,
         labels: [],
@@ -30,7 +31,7 @@ export default {
     };
   },
   mounted: async function() {
-    fetch("https://bitvavo.jjdev.nl:3443/currentPrice")
+    fetch(this.host + "/currentPrice")
       .then(data => data.json())
       .then(data => {
         this.currentPrice = +data;
@@ -39,7 +40,7 @@ export default {
   },
   methods: {
     fillChart: function() {
-      fetch("https://bitvavo.jjdev.nl:3443/trades")
+      fetch(this.host + "/trades")
         .then(data => data.json())
         .then(data => {
           for (let i = 0; i < data.length; i++) {

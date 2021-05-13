@@ -1,5 +1,29 @@
 <template>
   <v-app>
+    <v-dialog persistant v-model="popup" max-width="600px">
+      <v-card>
+        <v-card-title> Enter API host </v-card-title>
+        <span
+          >Please enter host address. <br />
+          Standard is localhost on port 3443 </span
+        ><v-text-field
+          style="margin-left: auto; margin-right: auto; width: 50%"
+          label="Host"
+          persistent-hint
+          required
+          v-model="host"
+        ></v-text-field>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="blue darken-1" text @click="popup = false">
+            Close
+          </v-btn>
+          <v-btn color="blue darken-1" text @click="setHost()">
+            Save
+          </v-btn>
+        </v-card-actions></v-card
+      >
+    </v-dialog>
     <v-app-bar app color="primary">
       <h1>DCA Dashboard</h1>
       <v-spacer></v-spacer>
@@ -9,19 +33,21 @@
     <v-main color="primary">
       <v-container fluid>
         <v-row>
-          <v-col><Dashboard /> </v-col>
+          <v-col><Dashboard v-if="hostIsKnown" /> </v-col>
         </v-row>
         <v-row>
           <v-col>
-            <v-card color="primary"><Sats /></v-card
+            <v-card color="primary"><Sats v-if="hostIsKnown"/></v-card
           ></v-col>
           <v-col>
-            <v-card color="primary"><Value /> </v-card
+            <v-card color="primary"><Value v-if="hostIsKnown" /> </v-card
           ></v-col>
         </v-row>
         <v-row>
           <v-col>
-            <v-card color="primary"><Price /> </v-card> </v-col
+            <v-card color="primary"
+              ><Price v-if="hostIsKnown" />
+            </v-card> </v-col
         ></v-row>
       </v-container>
     </v-main>
@@ -47,6 +73,9 @@ export default {
   components: { Sats, Value, Dashboard, Price },
   data: () => ({
     currentPrice: 0,
+    popup: true,
+    host: localStorage.getItem("host"),
+    hostIsKnown: false,
     pages: [
       { icon: "mdi-view-dashboard", title: "Dashboard" },
       {
@@ -59,12 +88,28 @@ export default {
       }
     ]
   }),
+  methods: {
+    fetchCurrentPrice: function() {
+      fetch(localStorage.getItem("host") + "/currentPrice")
+        .then(data => data.json())
+        .then(data => {
+          this.currentPrice = data;
+        });
+    },
+    setHost() {
+      localStorage.setItem("host", this.host);
+      this.popup = false;
+      this.hostIsKnown = true;
+      this.fetchCurrentPrice();
+    }
+  },
   mounted: async function() {
-    fetch("https://bitvavo.jjdev.nl:3443/currentPrice")
-      .then(data => data.json())
-      .then(data => {
-        this.currentPrice = data;
-      });
+    this.popup = localStorage.getItem("host") == null ? true : false;
+    if (this.popup == false) {
+      this.host = localStorage.getItem("host");
+      this.hostIsKnown = true;
+      this.fetchCurrentPrice();
+    }
   }
 };
 </script>

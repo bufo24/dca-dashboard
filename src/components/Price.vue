@@ -6,6 +6,7 @@ export default {
   extends: Line,
   data() {
     return {
+      host: localStorage.getItem("host"),
       chartData: {
         required: true,
         labels: [],
@@ -29,7 +30,7 @@ export default {
   },
   methods: {
     fillChart: function() {
-      fetch("https://bitvavo.jjdev.nl:3443/priceHistory")
+      fetch(this.host + "/priceHistory")
         .then(data => data.json())
         .then(data => {
           for (let i = 0; i < data.length; i++) {
