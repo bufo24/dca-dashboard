@@ -105,10 +105,22 @@ export default {
   },
   mounted: async function() {
     this.popup = localStorage.getItem("host") == null ? true : false;
+    this.host =
+      localStorage.getItem("host") == null ? "http://localhost:3443" : "";
     if (this.popup == false) {
       this.host = localStorage.getItem("host");
       this.hostIsKnown = true;
       this.fetchCurrentPrice();
+    }
+
+    if (
+      window.matchMedia &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches
+    ) {
+      localStorage.setItem("theme", "dark");
+      console.log("dark");
+    } else {
+      localStorage.setItem("theme", "light");
     }
   }
 };
