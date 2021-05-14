@@ -15,6 +15,14 @@
       <v-col>
         <v-card class="col" color="secondary">
           <span>
+            Sats staked: <br />
+            {{ satsStaked }} </span
+          ><span style="font-size:12px">(€{{ satsStakedValue }})</span></v-card
+        >
+      </v-col>
+      <v-col>
+        <v-card class="col" color="secondary">
+          <span>
             Percent change: <br /><span
               :style="[
                 percentChange < 0 ? { color: 'red' } : { color: 'green' }
@@ -55,11 +63,11 @@ export default {
       currentPrice: 0,
       btc: 0,
       costs: 0,
-      investments: 0
+      investments: 0,
+      staking: 0
     };
   },
   mounted: function() {
-    console.log("host", this.host);
     fetch(this.host + "/currentPrice")
       .then(data => data.json())
       .then(data => {
@@ -71,6 +79,7 @@ export default {
         this.btc = data.btc;
         this.costs = data.costs;
         this.investments = data.investments;
+        this.staking = data.staking;
       });
   },
   computed: {
@@ -83,10 +92,21 @@ export default {
       );
     },
     sats: function() {
-      return (this.btc * 100000000).toFixed();
+      return this.numberWithCommas(Math.round(this.btc * 100000000));
     },
     satsValue: function() {
       return (this.btc * this.currentPrice).toFixed(2);
+    },
+    satsStaked: function() {
+      return Math.round(this.staking * 100000000);
+    },
+    satsStakedValue: function() {
+      return (this.staking * this.currentPrice).toFixed(2);
+    }
+  },
+  methods: {
+    numberWithCommas: function(x) {
+      return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     }
   }
 };
@@ -103,5 +123,15 @@ export default {
 }
 .col {
   min-height: 100%;
+}
+</style>
+<style scoped>
+@media (prefers-color-scheme: dark) {
+  span {
+    color: black;
+  }
+}
+span {
+  font-weight: bold;
 }
 </style>
