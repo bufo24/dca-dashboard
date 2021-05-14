@@ -48,19 +48,23 @@ export default {
             this.chartData.labels.push(date.getDate() + "-" + date.getMonth());
             if (i == 0) {
               this.chartData.datasets[0].data.push(
-                data[i].amount * this.currentPrice
+                Math.round(data[i].amount * this.currentPrice)
               );
               this.chartData.datasets[1].data.push(
-                data[i].amount * data[i].price
+                Math.round(data[i].amount * data[i].price)
               );
             } else {
               this.chartData.datasets[0].data.push(
-                data[i].amount * this.currentPrice +
-                  this.chartData.datasets[0].data[i - 1]
+                Math.round(
+                  data[i].amount * this.currentPrice +
+                    this.chartData.datasets[0].data[i - 1]
+                )
               );
               this.chartData.datasets[1].data.push(
-                data[i].amount * data[i].price +
-                  this.chartData.datasets[1].data[i - 1]
+                Math.round(
+                  data[i].amount * data[i].price +
+                    this.chartData.datasets[1].data[i - 1]
+                )
               );
             }
           }
