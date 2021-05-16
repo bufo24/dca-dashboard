@@ -7,6 +7,8 @@ export default {
   data() {
     return {
       host: localStorage.getItem("host"),
+      apiKey: localStorage.getItem("key"),
+      apiSecret: localStorage.getItem("secret"),
       chartData: {
         required: true,
         labels: [],
@@ -30,7 +32,13 @@ export default {
   },
   methods: {
     fillChart: function() {
-      fetch(this.host + "/priceHistory")
+      fetch(this.host + "/priceHistory", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ apiKey: this.apiKey, apiSecret: this.apiSecret })
+      })
         .then(data => data.json())
         .then(data => {
           for (let i = 0; i < data.length; i++) {

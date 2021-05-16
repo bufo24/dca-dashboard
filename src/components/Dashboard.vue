@@ -59,6 +59,9 @@ export default {
   data: () => {
     return {
       host: localStorage.getItem("host"),
+      apiKey: localStorage.getItem("key"),
+      apiSecret: localStorage.getItem("secret"),
+      start: localStorage.getItem("start"),
       activeColor: "green",
       currentPrice: 0,
       btc: 0,
@@ -68,12 +71,32 @@ export default {
     };
   },
   mounted: function() {
-    fetch(this.host + "/currentPrice")
+    fetch(this.host + "/currentPrice", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        apiKey: this.apiKey,
+        apiSecret: this.apiSecret,
+        start: new Date(this.start).getTime()
+      })
+    })
       .then(data => data.json())
       .then(data => {
         this.currentPrice = data;
       });
-    fetch(this.host + "/tradeStats")
+    fetch(this.host + "/tradeStats", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        apiKey: this.apiKey,
+        apiSecret: this.apiSecret,
+        start: new Date(this.start).getTime()
+      })
+    })
       .then(data => data.json())
       .then(data => {
         this.btc = data.btc;

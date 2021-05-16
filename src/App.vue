@@ -13,6 +13,28 @@
           required
           v-model="host"
         ></v-text-field>
+        <v-text-field
+          style="margin-left: auto; margin-right: auto; width: 50%"
+          label="Api Key"
+          persistent-hint
+          required
+          v-model="apiKey"
+        ></v-text-field>
+        <v-text-field
+          style="margin-left: auto; margin-right: auto; width: 50%"
+          label="Api Secret"
+          persistent-hint
+          required
+          v-model="apiSecret"
+        ></v-text-field>
+        <v-date-picker
+          style="margin-left: auto; margin-right: auto; width: 50%"
+          label="From
+          date"
+          persistent-hint
+          required
+          v-model="start"
+        ></v-date-picker>
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn color="blue darken-1" text @click="popup = false">
@@ -55,7 +77,7 @@
     <v-footer app>
       <span
         >By
-        <a href="https://github.com/bufo24" target="_blank" style="color: black"
+        <a href="https://github.com/bufo24" target="_blank" id="github"
           >@bufo24</a
         ></span
       >
@@ -76,6 +98,9 @@ export default {
     popup: true,
     host: localStorage.getItem("host"),
     hostIsKnown: false,
+    apiKey: localStorage.getItem("key"),
+    apiSecret: localStorage.getItem("secret"),
+    start: localStorage.getItem("start"),
     pages: [
       { icon: "mdi-view-dashboard", title: "Dashboard" },
       {
@@ -90,23 +115,43 @@ export default {
   }),
   methods: {
     fetchCurrentPrice: function() {
-      fetch(localStorage.getItem("host") + "/currentPrice")
+      fetch(localStorage.getItem("host") + "/currentPrice", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ apiKey: this.apiKey, apiSecret: this.apiSecret })
+      })
         .then(data => data.json())
         .then(data => {
           this.currentPrice = data;
+          return true;
+        })
+        .catch(() => {
+          return false;
         });
     },
     setHost() {
       localStorage.setItem("host", this.host);
+      localStorage.setItem("key", this.apiKey);
+      localStorage.setItem("secret", this.apiSecret);
+      localStorage.setItem("start", this.start);
       this.popup = false;
       this.hostIsKnown = true;
-      this.fetchCurrentPrice();
     }
   },
   mounted: async function() {
-    this.popup = localStorage.getItem("host") == null ? true : false;
+    this.popup =
+      localStorage.getItem("host") == null ||
+      this.apiKey == "" ||
+      this.apiSecret == "" ||
+      this.start == null
+        ? true
+        : false;
     this.host =
-      localStorage.getItem("host") == null ? "http://localhost:3443" : "";
+      localStorage.getItem("host") == null
+        ? "https://bitvavo.jjdev.nl:3443"
+        : "";
     if (this.popup == false) {
       this.host = localStorage.getItem("host");
       this.hostIsKnown = true;
@@ -118,10 +163,19 @@ export default {
       window.matchMedia("(prefers-color-scheme: dark)").matches
     ) {
       localStorage.setItem("theme", "dark");
-      console.log("dark");
     } else {
       localStorage.setItem("theme", "light");
     }
   }
 };
 </script>
+<style scoped>
+#github {
+  color: black;
+}
+@media (prefers-color-scheme: dark) {
+  #github {
+    color: white;
+  }
+}
+</style>

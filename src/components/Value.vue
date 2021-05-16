@@ -7,6 +7,8 @@ export default {
   data() {
     return {
       host: localStorage.getItem("host"),
+      apiKey: localStorage.getItem("key"),
+      apiSecret: localStorage.getItem("secret"),
       chartData: {
         required: true,
         labels: [],
@@ -31,7 +33,13 @@ export default {
     };
   },
   mounted: async function() {
-    fetch(this.host + "/currentPrice")
+    fetch(this.host + "/currentPrice", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ apiKey: this.apiKey, apiSecret: this.apiSecret })
+    })
       .then(data => data.json())
       .then(data => {
         this.currentPrice = +data;
@@ -40,7 +48,13 @@ export default {
   },
   methods: {
     fillChart: function() {
-      fetch(this.host + "/trades")
+      fetch(this.host + "/trades", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ apiKey: this.apiKey, apiSecret: this.apiSecret })
+      })
         .then(data => data.json())
         .then(data => {
           for (let i = 0; i < data.length; i++) {
