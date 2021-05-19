@@ -9,6 +9,7 @@ export default {
       host: localStorage.getItem("host"),
       apiKey: localStorage.getItem("key"),
       apiSecret: localStorage.getItem("secret"),
+      start: localStorage.getItem("start"),
       chartData: {
         required: true,
         labels: [],
@@ -37,13 +38,19 @@ export default {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ apiKey: this.apiKey, apiSecret: this.apiSecret })
+        body: JSON.stringify({
+          apiKey: this.apiKey,
+          apiSecret: this.apiSecret,
+          start: new Date(this.start).getTime()
+        })
       })
         .then(data => data.json())
         .then(data => {
           for (let i = 0; i < data.length; i++) {
             let date = new Date(data[i].timestamp);
-            this.chartData.labels.push(date.getDate() + "-" + date.getMonth());
+            this.chartData.labels.push(
+              date.getDate() + "-" + (date.getMonth() + 1)
+            );
             if (i == 0) {
               this.chartData.datasets[0].data.push(data[i].amount * 100000000);
             } else {

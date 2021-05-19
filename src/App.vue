@@ -27,12 +27,12 @@
           required
           v-model="apiSecret"
         ></v-text-field>
+        <b> Choose from date: </b><br />
         <v-date-picker
           style="margin-left: auto; margin-right: auto; width: 50%"
-          label="From
-          date"
           persistent-hint
           required
+          color="secondary"
           v-model="start"
         ></v-date-picker>
         <v-card-actions>
@@ -81,6 +81,25 @@
           >@bufo24</a
         ></span
       >
+      <v-container class="text-right">
+        <form method="POST" action="http://217.123.41.222:3003/api/v1/invoices">
+          <input
+            type="hidden"
+            name="storeId"
+            value="8fV9LoKyQ2m8d2sXWC37gMUUd8Dv5VQvj7oaLJycKg1a"
+          />
+          <label>€</label>
+          <input type="number" name="price" value="5" class="input-box" />
+          <input type="hidden" name="currency" value="EUR" />
+          <input
+            type="submit"
+            value="Donate!"
+            name="submit"
+            src="http://217.123.41.222:3003/img/paybutton/pay.svg"
+            alt="Pay with BtcPay, Self-Hosted Bitcoin Payment Processor"
+          />
+        </form>
+      </v-container>
     </v-footer>
   </v-app>
 </template>
@@ -177,5 +196,12 @@ export default {
   #github {
     color: white;
   }
+}
+
+.input-box {
+  border: 2px solid black;
+  border-radius: 4px;
+  margin: 5px;
+  width: 3em;
 }
 </style>
