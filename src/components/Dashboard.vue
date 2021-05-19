@@ -3,7 +3,7 @@
     <v-row
       ><v-col>
         <v-card class="col" color="secondary">
-          <span> Total invested: <br />€{{ costs }}</span></v-card
+          <span> Total invested: <br />€{{ costs.toFixed(2) }}</span></v-card
         >
       </v-col>
       <v-col>
