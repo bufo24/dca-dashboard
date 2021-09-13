@@ -4,12 +4,15 @@ import { Line } from "vue-chartjs";
 export default {
   name: "Sats",
   extends: Line,
+  props: {
+    coin: String,
+    start: String
+  },
   data() {
     return {
       host: localStorage.getItem("host"),
       apiKey: localStorage.getItem("key"),
       apiSecret: localStorage.getItem("secret"),
-      start: localStorage.getItem("start"),
       chartData: {
         required: true,
         labels: [],
@@ -33,6 +36,8 @@ export default {
   },
   methods: {
     fillChart: function() {
+      this.chartData.labels = [];
+      this.chartData.datasets[0].data = [];
       fetch(this.host + "/trades", {
         method: "POST",
         headers: {
@@ -41,11 +46,14 @@ export default {
         body: JSON.stringify({
           apiKey: this.apiKey,
           apiSecret: this.apiSecret,
-          start: new Date(this.start).getTime()
+          start: new Date(this.start).getTime(),
+          coin: this.coin
         })
       })
         .then(data => data.json())
         .then(data => {
+          // console.log(data);
+          // let startDate = data[0].timestamp;
           for (let i = 0; i < data.length; i++) {
             let date = new Date(data[i].timestamp);
             this.chartData.labels.push(
@@ -62,6 +70,14 @@ export default {
           }
           this.renderChart(this.chartData, this.chartOptions);
         });
+    }
+  },
+  watch: {
+    coin: function() {
+      this.fillChart();
+    },
+    start: function() {
+      this.fillChart();
     }
   }
 };

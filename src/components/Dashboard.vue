@@ -8,7 +8,8 @@
       </v-col>
       <v-col>
         <v-card class="col" color="secondary">
-          <span> Sats stacked: <br />{{ sats }} </span
+          <span v-if="coin == 'BTC'"> Sats stacked: <br />{{ sats }} </span>
+          <span v-if="coin == 'ETH'"> ETH stacked: <br />{{ btc }} </span
           ><span style="font-size:12px">(€{{ satsValue }})</span>
         </v-card>
       </v-col>
@@ -56,12 +57,15 @@
 <script>
 export default {
   name: "App",
+  props: {
+    coin: String,
+    start: String
+  },
   data: () => {
     return {
       host: localStorage.getItem("host"),
       apiKey: localStorage.getItem("key"),
       apiSecret: localStorage.getItem("secret"),
-      start: localStorage.getItem("start"),
       activeColor: "green",
       currentPrice: 0,
       btc: 0,
@@ -71,39 +75,7 @@ export default {
     };
   },
   mounted: function() {
-    fetch(this.host + "/currentPrice", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        apiKey: this.apiKey,
-        apiSecret: this.apiSecret,
-        start: new Date(this.start).getTime()
-      })
-    })
-      .then(data => data.json())
-      .then(data => {
-        this.currentPrice = data;
-      });
-    fetch(this.host + "/tradeStats", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        apiKey: this.apiKey,
-        apiSecret: this.apiSecret,
-        start: new Date(this.start).getTime()
-      })
-    })
-      .then(data => data.json())
-      .then(data => {
-        this.btc = data.btc;
-        this.costs = data.costs;
-        this.investments = data.investments;
-        this.staking = data.staking;
-      });
+    this.fetchData();
   },
   computed: {
     avgPrice: function() {
@@ -128,8 +100,53 @@ export default {
     }
   },
   methods: {
+    fetchData: function() {
+      fetch(this.host + "/currentPrice", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          apiKey: this.apiKey,
+          apiSecret: this.apiSecret,
+          coin: this.coin,
+          start: new Date(this.start).getTime()
+        })
+      })
+        .then(data => data.json())
+        .then(data => {
+          this.currentPrice = data;
+        });
+      fetch(this.host + "/tradeStats", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          apiKey: this.apiKey,
+          apiSecret: this.apiSecret,
+          coin: this.coin,
+          start: new Date(this.start).getTime()
+        })
+      })
+        .then(data => data.json())
+        .then(data => {
+          this.btc = data.btc;
+          this.costs = data.costs;
+          this.investments = data.investments;
+          this.staking = data.staking;
+        });
+    },
     numberWithCommas: function(x) {
       return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+  },
+  watch: {
+    coin: function() {
+      this.fetchData();
+    },
+    start: function() {
+      this.fetchData();
     }
   }
 };

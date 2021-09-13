@@ -27,6 +27,14 @@
           required
           v-model="apiSecret"
         ></v-text-field>
+        <v-select
+          style="margin-left: auto; margin-right: auto; width: 50%"
+          :items="coins"
+          label="Coin to check"
+          persistent-hint
+          required
+          v-model="coin"
+        ></v-select>
         <b> Choose from date: </b><br />
         <v-date-picker
           style="margin-left: auto; margin-right: auto; width: 50%"
@@ -49,27 +57,69 @@
     <v-app-bar app color="primary">
       <h1>DCA Dashboard</h1>
       <v-spacer></v-spacer>
+
+      <v-menu
+        ref="menu"
+        v-model="menu"
+        :close-on-content-click="false"
+        :return-value.sync="start"
+        transition="scale-transition"
+        offset-y
+        min-width="auto"
+      >
+        <template v-slot:activator="{ on, attrs }">
+          <v-text-field
+            v-model="start"
+            label="Start date"
+            prepend-icon="mdi-calendar"
+            readonly
+            v-bind="attrs"
+            v-on="on"
+            max-width="50px"
+          ></v-text-field>
+        </template>
+        <v-date-picker v-model="start" no-title scrollable>
+          <v-spacer></v-spacer>
+          <v-btn text color="primary" @click="$refs.menu.save(start)">
+            OK
+          </v-btn>
+        </v-date-picker>
+      </v-menu>
+      <v-select
+        label="Coin"
+        dense
+        :items="coins"
+        v-model="coin"
+        style="max-width: 7%; padding: 8px; margin: 0;"
+        color="secondary"
+      >
+      </v-select>
       <span> €{{ currentPrice }}</span>
-      <v-icon color="#f7931a">mdi-bitcoin</v-icon>
+      <v-icon v-if="this.coin == 'BTC'" color="#f7931a">mdi-bitcoin</v-icon>
+      <v-icon v-if="this.coin == 'ETH'" color="#3c3c3d">mdi-ethereum</v-icon>
     </v-app-bar>
     <v-main color="primary">
       <v-container fluid>
         <v-row>
-          <v-col><Dashboard v-if="hostIsKnown" /> </v-col>
+          <v-col
+            ><Dashboard v-if="hostIsKnown" :coin="coin" :start="start"
+          /></v-col>
         </v-row>
         <v-row>
           <v-col>
-            <v-card color="primary"><Sats v-if="hostIsKnown"/></v-card
+            <v-card color="primary"
+              ><Sats v-if="hostIsKnown" :coin="coin" :start="start"/></v-card
           ></v-col>
           <v-col>
-            <v-card color="primary"><Value v-if="hostIsKnown" /> </v-card
+            <v-card color="primary"
+              ><Value v-if="hostIsKnown" :coin="coin" :start="start"/></v-card
           ></v-col>
         </v-row>
         <v-row>
           <v-col>
             <v-card color="primary"
-              ><Price v-if="hostIsKnown" />
-            </v-card> </v-col
+              ><Price v-if="hostIsKnown" :coin="coin" :start="start"
+            /></v-card> </v-col
         ></v-row>
       </v-container>
     </v-main>
@@ -113,6 +163,9 @@ export default {
   name: "App",
   components: { Sats, Value, Dashboard, Price },
   data: () => ({
+    menu: false,
+    coin: localStorage.getItem("coin"),
+    coins: ["BTC", "ETH"],
     currentPrice: 0,
     popup: true,
     host: localStorage.getItem("host"),
@@ -133,13 +186,20 @@ export default {
     ]
   }),
   methods: {
+    update: function() {
+      this.$mount();
+    },
     fetchCurrentPrice: function() {
       fetch(localStorage.getItem("host") + "/currentPrice", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ apiKey: this.apiKey, apiSecret: this.apiSecret })
+        body: JSON.stringify({
+          apiKey: this.apiKey,
+          apiSecret: this.apiSecret,
+          coin: this.coin
+        })
       })
         .then(data => data.json())
         .then(data => {
@@ -155,6 +215,7 @@ export default {
       localStorage.setItem("key", this.apiKey);
       localStorage.setItem("secret", this.apiSecret);
       localStorage.setItem("start", this.start);
+      localStorage.setItem("coin", this.coin);
       this.popup = false;
       this.hostIsKnown = true;
     }
@@ -164,7 +225,8 @@ export default {
       localStorage.getItem("host") == null ||
       this.apiKey == "" ||
       this.apiSecret == "" ||
-      this.start == null
+      this.start == null ||
+      this.coin == null
         ? true
         : false;
     this.host =
@@ -185,10 +247,30 @@ export default {
     } else {
       localStorage.setItem("theme", "light");
     }
+  },
+  watch: {
+    coin: function(value, oldValue) {
+      if (value != oldValue) {
+        this.coin = value;
+        localStorage.setItem("coin", value);
+        this.fetchCurrentPrice();
+        if (this.update()) {
+          console.log("reloaded");
+        }
+      }
+    },
+    start: function(value, oldValue) {
+      if (value != oldValue) {
+        localStorage.setItem("start", value);
+        if (this.update()) {
+          console.log("reloaded");
+        }
+      }
+    }
   }
 };
 </script>
-<style scoped>
+<style>
 #github {
   color: black;
 }
@@ -203,5 +285,17 @@ export default {
   border-radius: 4px;
   margin: 5px;
   width: 3em;
+}
+
+.v-text-field__details {
+  display: none !important;
+}
+
+#app
+  > div.v-application--wrap
+  > header
+  > div
+  > div.v-input.v-input--is-label-active.v-input--is-dirty.v-input--is-readonly.theme--light.v-text-field.v-text-field--is-booted {
+  max-width: 20%;
 }
 </style>
